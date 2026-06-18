@@ -1,14 +1,37 @@
-# astrbot-plugin-helloworld
+#  Astrbot_Plugin_Xgif 从X（推特）上获取gif
 
-AstrBot 插件模板 / A template plugin for AstrBot plugin feature
+##  简介
+从X支持通过发送推文链接或引用推文消息，自动提取 X (Twitter) 上的视频并转换为 GIF 表情包发送
 
-> [!NOTE]
-> This repo is just a template of [AstrBot](https://github.com/AstrBotDevs/AstrBot) Plugin.
-> 
-> [AstrBot](https://github.com/AstrBotDevs/AstrBot) is an agentic assistant for both personal and group conversations. It can be deployed across dozens of mainstream instant messaging platforms, including QQ, Telegram, Feishu, DingTalk, Slack, LINE, Discord, Matrix, etc. In addition, it provides a reliable and extensible conversational AI infrastructure for individuals, developers, and teams. Whether you need a personal AI companion, an intelligent customer support agent, an automation assistant, or an enterprise knowledge base, AstrBot enables you to quickly build AI applications directly within your existing messaging workflows.
+##  食用方法
+/转gif X链接
 
-# Supports
+引用X链接消息，并输入/gif
 
-- [AstrBot Repo](https://github.com/AstrBotDevs/AstrBot)
-- [AstrBot Plugin Development Docs (Chinese)](https://docs.astrbot.app/dev/star/plugin-new.html)
-- [AstrBot Plugin Development Docs (English)](https://docs.astrbot.app/en/dev/star/plugin-new.html)
+![alt text](1.jpg)!
+
+[alt text](2.jpg)
+
+##  注意事项
+1. 该插件依赖FFmpeg，请自行安装
+
+2. 如有必要，请在 PROXY_URL = "" 项中填写代理地址
+
+## ️ 免责声明
+
+1. 本插件仅供个人学习、研究和技术交流使用，请勿将其用于任何商业盈利目的
+
+2. 使用本插件解析和转换的内容，其版权归原作者所有。请遵守相关法律法规，尊重他人的知识产权与肖像权
+
+3. 任何因使用本插件而产生的版权纠纷或法律责任，均由使用者自行承担，插件开发者不承担任何连带责任
+
+4. 若本插件的任何功能或内容无意中侵犯了您的合法权益，请及时通过 Issue 或邮件与我联系，我将在核实后第一时间进行下架或修改处理
+
+##  版本日志
+
+### v1.0.0（2026-06-19）
+嘻嘻，做出来了
+
+##  开源协议
+
+声明项目基于 MIT License 开源
