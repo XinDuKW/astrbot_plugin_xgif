@@ -172,7 +172,7 @@ class TwitterGifConverter(Star):
                             quoted_msg = await event.bot.get_msg(message_id=int(reply_id))
                             raw_message = quoted_msg.get("message", [])
                             
-                            # 【核心修复】：打印拉取到的真实消息结构，方便排查
+                            # 打印拉取到的真实消息结构，方便排查
                             logger.info(f"[TwitterGif] 📥 引用消息原始内容: {raw_message}")
                             
                             if isinstance(raw_message, list):
