@@ -6,16 +6,23 @@ import re
 import logging
 from astrbot.api.event import filter, AstrMessageEvent
 from astrbot.api.star import Context, Star, register
+from astrbot.api import AstrBotConfig
 
 logger = logging.getLogger("xgif")
-PROXY_URL = ""
 
-@register("xgif", "XinDuKW", "X（推特）GIF助手", "1.0")
+@register("xgif","XinDuKW", "发送推文链接或引用推文消息，通过FFmpeg将X (Twitter)动图转为常规 GIF 格式表情包发送","1.1.0")
+
 class TwitterGifConverter(Star):
-    def __init__(self, context: Context):
+    def __init__(self, context: Context, config: AstrBotConfig):
         super().__init__(context)
+        self.config = config
+        proxy_url = self.config.get("proxy_url", "")
+        self.proxy_url = proxy_url.strip() if proxy_url else None
         self.temp_dir = "./temp_gif"
         os.makedirs(self.temp_dir, exist_ok=True)
+
+
+
 
     async def safe_send(self, event, text):
         try:
@@ -36,9 +43,12 @@ class TwitterGifConverter(Star):
         real_video_url = None
         headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
         
+        logger.info(f"[TwitterGif] 当前使用代理: {self.proxy_url}")
+
         try:
+
             async with aiohttp.ClientSession() as session:
-                async with session.get(tweet_url, headers=headers, proxy=PROXY_URL) as resp:
+                async with session.get(tweet_url, headers=headers, proxy=self.proxy_url) as resp:
                     if resp.status == 200:
                         html_content = await resp.text()
                         video_match = re.search(r'(https?://video\.twimg\.com/[^\s"\'<>]+\.(?:mp4|m3u8)[^\s"\'<>]*)', html_content)
@@ -54,7 +64,7 @@ class TwitterGifConverter(Star):
         local_mp4 = os.path.join(self.temp_dir, f"{uuid.uuid4().hex}.mp4")
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.get(real_video_url, headers=headers, proxy=PROXY_URL) as resp:
+                async with session.get(real_video_url, headers=headers, proxy=self.proxy_url) as resp:
                     if resp.status == 200:
                         with open(local_mp4, 'wb') as f: f.write(await resp.read())
                     else:
@@ -67,7 +77,6 @@ class TwitterGifConverter(Star):
         await self.safe_send(event, "🎞️ 正在转换为 GIF...")
         local_gif = local_mp4.replace(".mp4", ".gif")
         
-        # 🔥 核心修复：修正了 FFmpeg 滤镜链的语法，确保 split 正确分流
         cmd = [
             'ffmpeg', '-i', local_mp4, 
             '-vf', 'fps=10,scale=320:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse', 
@@ -102,6 +111,8 @@ class TwitterGifConverter(Star):
     async def convert_gif(self, event: AstrMessageEvent, link: str = ""):
         tweet_url = None
         
+        message_chain = getattr(event.message_obj, "message", [])
+
         # 1. 优先检查指令参数
         if link and link.startswith("http"):
             tweet_url = link
@@ -116,7 +127,7 @@ class TwitterGifConverter(Star):
                         tweet_url = self.extract_tweet_url(text)
                         if tweet_url: break
 
-        # 3. 终极方案：通过原生 WebSocket 调用 OneBot 的 get_msg 接口
+        # 3. WebSocket 调用 OneBot 的 get_msg 接口
         if not tweet_url and isinstance(message_chain, list):
             for seg in message_chain:
                 if getattr(seg, "type", None) == "Reply":

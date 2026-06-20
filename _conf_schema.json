@@ -1,0 +1,8 @@
+{
+  "proxy_url": {
+    "description": "代理地址",
+    "hint": "格式 http://127.0.0.1:port",
+    "type": "string",
+    "default":""
+  }
+}
